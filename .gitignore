@@ -1,0 +1,32 @@
+# Binaries
+*.exe
+*.out
+
+# SQLite database
+*.db
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go build cache
+bin/
+# Binaries
+*.exe
+*.out
+
+# SQLite database
+*.db
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go build cache
+bin/
