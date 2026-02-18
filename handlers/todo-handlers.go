@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/yourname/go-todo-api/models"
-	"github.com/yourname/go-todo-api/storage"
+	"github.com/cater20/go-todo-api/models"
+	"github.com/cater20/go-todo-api/storage"
 )
 
 // CreateTodo creates a new To-Do item
