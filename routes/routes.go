@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/yourname/go-todo-api/handlers"
+	"github.com/cater20/go-todo-api/handlers"
 )
 
 // SetupRoutes returns a configured router with all API routes
