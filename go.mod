@@ -1,4 +1,4 @@
-module github.com/yourname/go-todo-api
+module github.com/cater20/go-todo-api
 
 go 1.22.2
 
