@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	//"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
