@@ -44,6 +44,8 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 
 // GetTodos returns all To-Do items
 func GetTodos(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	rows, err := storage.DB.Query("SELECT id, title, completed FROM todos")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -51,17 +53,20 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var todos []models.Todo
+	todos := []models.Todo{} // important: initialize slice
 
 	for rows.Next() {
 		var todo models.Todo
-		rows.Scan(&todo.ID, &todo.Title, &todo.Completed)
+		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		todos = append(todos, todo)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todos)
+	json.NewEncoder(w).Encode(todos) // returns [] if empty
 }
+
 
 // GetTodoByID returns a single To-Do by ID
 //func GetTodoByID(w http.ResponseWriter, r *http.Request) {
