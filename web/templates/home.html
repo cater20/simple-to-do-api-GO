@@ -1,0 +1,86 @@
+{{define "home.html"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Go To-Do App</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; padding-top: 60px; }
+        .card { background: #1e293b; padding: 30px; border-radius: 12px; width: 450px; }
+        input, button { padding: 10px; margin-top: 10px; width: 100%; box-sizing: border-box; }
+        button { background: #22c55e; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .todo { background: #334155; margin-top: 10px; padding: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .todo-title { flex: 1; }
+        .btn-delete { background: #ef4444; width: auto; padding: 6px 12px; margin: 0 0 0 8px; }
+        .btn-update { background: #3b82f6; width: auto; padding: 6px 12px; margin: 0 0 0 8px; }
+        .toggle-btn { background: #6366f1; margin-top: 15px; }
+        #todo-list { display: none; margin-top: 10px; }
+        .edit-input { display: none; flex: 1; background: #1e293b; color: white; border: 1px solid #6366f1; border-radius: 4px; padding: 4px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>📝 Go To-Do App</h2>
+
+        <!-- Add Todo Form -->
+        <form method="POST" action="/add">
+            <input name="title" placeholder="Enter todo..." required>
+            <button type="submit">➕ Add Todo</button>
+        </form>
+
+        <hr>
+
+        <!-- Toggle Button -->
+        <button class="toggle-btn" onclick="toggleList()">📋 Show / Hide Todo List</button>
+
+        <!-- Todo List (hidden by default) -->
+        <div id="todo-list">
+            {{range .}}
+            <div class="todo" id="todo-{{.ID}}">
+                <span class="todo-title" id="title-{{.ID}}">{{.Title}} {{if .Completed}}✅{{end}}</span>
+                <input class="edit-input" id="edit-{{.ID}}" value="{{.Title}}">
+
+                <!-- Update Button -->
+                <button class="btn-update" onclick="toggleEdit({{.ID}})">✏️</button>
+
+                <!-- Delete Button -->
+                <form method="POST" action="/delete/{{.ID}}" style="margin:0; width:auto;">
+                    <button class="btn-delete" type="submit">🗑️</button>
+                </form>
+            </div>
+            {{else}}
+            <p style="color:#94a3b8">No todos yet. Add one above!</p>
+            {{end}}
+        </div>
+    </div>
+
+    <script>
+        function toggleList() {
+            var list = document.getElementById('todo-list');
+            list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleEdit(id) {
+            var titleEl = document.getElementById('title-' + id);
+            var editEl = document.getElementById('edit-' + id);
+
+            if (editEl.style.display === 'inline') {
+                // Save update
+                var newTitle = editEl.value;
+                fetch('/todos/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
+                }).then(function() {
+                    titleEl.textContent = newTitle;
+                    titleEl.style.display = 'inline';
+                    editEl.style.display = 'none';
+                });
+            } else {
+                titleEl.style.display = 'none';
+                editEl.style.display = 'inline';
+            }
+        }
+    </script>
+</body>
+</html>
+{{end}}

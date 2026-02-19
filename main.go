@@ -5,26 +5,33 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/cater20/go-todo-api/routes"
+	"github.com/cater20/go-todo-api/handlers"
 	"github.com/cater20/go-todo-api/storage"
-
+	"github.com/cater20/go-todo-api/web"
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	// Initialize SQLite DB
 	storage.InitDB()
 
-	// Create main router
 	router := mux.NewRouter()
 
-	// Setup API routes
-	apiRouter := routes.SetupRoutes()        // returns *mux.Router
-	router.PathPrefix("/todos").Handler(apiRouter)
+	// Frontend routes
+	router.HandleFunc("/", web.HomeHandler).Methods("GET")
+	router.HandleFunc("/add", web.AddTodoHandler).Methods("POST")
 
-	// Serve frontend static files
-	fs := http.FileServer(http.Dir("./frontend"))
-	router.PathPrefix("/").Handler(fs)
+	// API routes
+	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong!"))
+	}).Methods("GET")
+	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"status":"ok"}`))
+	}).Methods("GET")
+	router.HandleFunc("/todos", handlers.GetTodos).Methods("GET")
+	router.HandleFunc("/todos/{id}", handlers.GetTodoByID).Methods("GET")
+	router.HandleFunc("/todos", handlers.CreateTodo).Methods("POST")
+	router.HandleFunc("/todos/{id}", handlers.UpdateTodo).Methods("PUT")
+	router.HandleFunc("/todos/{id}", handlers.DeleteTodo).Methods("DELETE")
 
 	fmt.Println("Server running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
